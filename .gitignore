@@ -1,0 +1,9 @@
+# macOS
+.DS_Store
+
+# Backup files
+*.bak
+*~
+
+# Local config files (if you make custom configs)
+config.local.sh
