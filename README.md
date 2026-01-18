@@ -1,14 +1,27 @@
 # SSH Tools
 
-Easy SSH connection utilities for accessing remote servers.
+Easy SSH connection utilities for accessing remote servers and managing Arduino projects.
+
+## Project Overview
+
+This repository provides SSH connection tools for working with an **Ubuntu 24.04 LTS server running on a Mac Mini 2014**. The server is set up for Arduino development, specifically for programming and interfacing with an **Arduino Uno** via USB.
+
+### Use Case
+
+The Mac Mini 2014 runs Ubuntu Server as a headless development environment for Arduino projects. This allows:
+- Remote Arduino sketch compilation and uploading
+- Server-side Arduino automation and monitoring
+- Centralized Arduino project management
+- Running Arduino projects 24/7 without tying up a desktop computer
 
 ## What This Does
 
 This repository contains a helper script that makes it easy to:
-- Connect to your Ubuntu server via SSH
-- Run commands remotely
-- Copy files to/from the server
+- Connect to your Ubuntu server (Mac Mini 2014) via SSH
+- Run commands remotely for Arduino development
+- Copy Arduino sketches to/from the server
 - Automatically handle authentication
+- Manage Arduino Uno connected via USB
 
 ## Setup
 
@@ -89,15 +102,27 @@ The script uses `sshpass` to automate SSH password authentication. Here's what h
 
 ## Server Information
 
-**Current Server:**
+**Hardware:**
+- **Device**: Mac Mini 2014
+- **Purpose**: Headless Ubuntu server for Arduino development
+- **Connection**: Local network at 172.16.0.11
+
+**Software:**
 - **User**: jamieson
 - **IP**: 172.16.0.11
-- **OS**: Ubuntu 24.04.3 LTS
-- **Installed**: Arduino CLI v1.4.0 with AVR core for Arduino Uno
+- **OS**: Ubuntu 24.04.3 LTS (Noble)
+- **Kernel**: Linux 6.8.0-90-generic
+- **Arduino CLI**: v1.4.0 with AVR core for Arduino Uno
+- **Architecture**: x86_64 (64-bit)
 
-## Arduino on Server
+**Arduino Hardware:**
+- **Board**: Arduino Uno
+- **Connection**: USB-B to USB-A cable (typically appears as `/dev/ttyACM0` or `/dev/ttyUSB0`)
+- **Supported**: Full compile, upload, and serial monitor capabilities
 
-The server has Arduino CLI installed for working with Arduino Uno:
+## Arduino Development Workflow
+
+The server has Arduino CLI installed for working with Arduino Uno. This enables a complete development workflow:
 
 ```bash
 # Check connected boards
