@@ -13,18 +13,29 @@ DCC-EX CommandStation turns your Arduino into a complete DCC (Digital Command Co
 
 ## Hardware Requirements
 
-### Minimum Setup (Arduino Uno)
-- **Arduino Uno** (what you have)
-- **Motor Shield** (required for track power):
-  - Arduino Motor Shield R3 (recommended)
-  - Deek-Robot Motor Shield
-  - Other compatible L298N-based shields
+### Your Setup
+- **Arduino Uno** ✓
+- **L298N Motor Shield** ✓ (WWZMDiB 2 Pcs L298N Motor Driver Controller Board)
+  - Dual H-Bridge module
+  - Supports up to 2A per channel
+  - Works perfectly with DCC-EX
+
+### L298N Shield Wiring
+The L298N module connects to Arduino via jumper wires:
+- **ENA** → Arduino Pin 3 (PWM)
+- **IN1** → Arduino Pin 4
+- **IN2** → Arduino Pin 5
+- **IN3** → Arduino Pin 6
+- **IN4** → Arduino Pin 7
+- **ENB** → Arduino Pin 9 (PWM)
+- **GND** → Arduino GND
+- **5V** → Arduino 5V (for logic) OR external power supply
+
+**Track Power**: Connect external 7-12V DC power supply to L298N's power input.
 
 ### Optional Hardware
 - **WiFi Shield** or **ESP8266/ESP32** for wireless throttle control
-- **Motor Driver** (for higher current requirements)
-
-**Important**: The Arduino Uno alone cannot power the tracks. You MUST have a motor shield to provide power to your model trains.
+- **Higher current motor driver** (if running many trains)
 
 ## Installation Steps
 
@@ -43,23 +54,43 @@ cd /Users/michaeljamieson/Code/ssh-tools
 ./connect-server.sh run 'cd ~ && tar -xzf CommandStation-EX.tar.gz && mv CommandStation-EX arduino_projects/'
 ```
 
-### Step 3: Configure for Your Setup
+### Step 3: Configure for Your L298N Setup
 
-The main configuration file is `config.h`. You'll need to edit it for your motor shield:
+The main configuration file is `config.h`. You'll need to edit it for your L298N motor shield:
 
 ```bash
 ./connect-server.sh run 'nano ~/arduino_projects/CommandStation-EX/config.h'
 ```
 
-**Key Configuration Options:**
+**Key Configuration for L298N:**
 
-1. **Motor Shield Selection** - Uncomment ONE of these lines based on your hardware:
+1. **Motor Shield Selection** - For your L298N shield, you need a custom configuration:
+
+   Look for the motor shield type section and add/uncomment:
    ```cpp
-   #define MOTOR_SHIELD_TYPE STANDARD_MOTOR_SHIELD  // Arduino Motor Shield R3
-   // #define MOTOR_SHIELD_TYPE POLOLU_MOTOR_SHIELD
-   // #define MOTOR_SHIELD_TYPE FUNDUMOTO_SHIELD
-   // #define MOTOR_SHIELD_TYPE FIREBOX_MK1
-   // #define MOTOR_SHIELD_TYPE IBT_2_WITH_ARDUINO
+   #define MOTOR_SHIELD_TYPE L298N_MOTOR_SHIELD
+   ```
+
+   **OR** if L298N_MOTOR_SHIELD is not available in your version, use custom pin config:
+   ```cpp
+   #define MOTOR_SHIELD_TYPE STANDARD_MOTOR_SHIELD
+   ```
+
+   Then create a custom pin configuration in `MotorDrivers.h` or use the standard pins with jumper wiring as shown above.
+
+2. **For L298N Standalone Module** - The easiest approach is to define custom pins:
+   ```cpp
+   // Main track (Channel A)
+   #define MAIN_ENABLE_PIN 3
+   #define MAIN_SIGNAL_PIN 4
+   #define MAIN_SIGNAL_PIN_ALT 5
+   #define MAIN_SENSE_PIN A0
+
+   // Programming track (Channel B)
+   #define PROG_ENABLE_PIN 9
+   #define PROG_SIGNAL_PIN 6
+   #define PROG_SIGNAL_PIN_ALT 7
+   #define PROG_SENSE_PIN A1
    ```
 
 2. **WiFi Configuration** (optional, if you have WiFi shield):
