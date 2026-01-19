@@ -4,7 +4,7 @@ Easy SSH connection utilities for accessing remote servers and managing Arduino 
 
 ## Project Overview
 
-This repository provides SSH connection tools for working with an **Ubuntu 24.04 LTS server running on a Mac Mini 2014**. The server is set up for Arduino development, specifically for programming and interfacing with an **Arduino Uno** via USB.
+This repository provides SSH connection tools for working with an **Ubuntu 24.04 LTS server running on a Mac Mini 2014**. The server is set up for Arduino development, specifically for programming and interfacing with an **Arduino Uno** via USB. The primary connection is now via **Tailscale**.
 
 ### Use Case
 
@@ -41,12 +41,18 @@ sudo apt-get install sshpass
 
 ### Configuration
 
-Edit the variables at the top of `connect-server.sh` to match your server:
+Edit the variables at the top of `connect-server.sh` to match your server, or override them with environment variables (recommended):
 
 ```bash
 SERVER_USER="jamieson"
-SERVER_IP="172.16.0.11"
+SERVER_IP="100.88.255.106"
 SERVER_PASSWORD="password"
+```
+
+Environment override example:
+
+```bash
+SERVER_USER=jamieson SERVER_IP=100.88.255.106 SERVER_PASSWORD=password ./connect-server.sh connect
 ```
 
 ## Usage
@@ -105,14 +111,15 @@ The script uses `sshpass` to automate SSH password authentication. Here's what h
 **Hardware:**
 - **Device**: Mac Mini 2014
 - **Purpose**: Headless Ubuntu server for Arduino development
-- **Connection**: Local network at 172.16.0.11
+- **Connection**: Tailscale at 100.88.255.106
 
 **Software:**
 - **User**: jamieson
-- **IP**: 172.16.0.11
+- **IP (Tailscale)**: 100.88.255.106
+- **Password**: password
 - **OS**: Ubuntu 24.04.3 LTS (Noble)
 - **Kernel**: Linux 6.8.0-90-generic
-- **Arduino CLI**: v1.4.0 with AVR core for Arduino Uno
+- **Arduino CLI**: Installed at `~/bin/arduino-cli` (available in `connect-server.sh run`)
 - **Architecture**: x86_64 (64-bit)
 
 **Arduino Hardware:**
@@ -195,17 +202,17 @@ For better security, set up SSH keys:
 ssh-keygen -t ed25519
 
 # Copy public key to server
-ssh-copy-id jamieson@172.16.0.11
+ssh-copy-id jamieson@100.88.255.106
 
 # Now you can connect without password
-ssh jamieson@172.16.0.11
+ssh jamieson@100.88.255.106
 ```
 
 ## Troubleshooting
 
 ### Permission Denied
 - Check username and password are correct
-- Verify server IP address is reachable: `ping 172.16.0.11`
+- Verify server IP address is reachable: `ping 100.88.255.106`
 
 ### sshpass Not Found
 - Run the script once, it will auto-install
@@ -215,6 +222,25 @@ ssh jamieson@172.16.0.11
 - Check if Arduino is connected: `./connect-server.sh run 'arduino-cli board list'`
 - Verify user is in dialout group: `./connect-server.sh run 'groups'`
 - If dialout not in groups, log out and back in to the server
+
+## Tailscale + Arduino CLI Notes
+
+These are the commands used most often on the Tailscale-hosted server:
+
+```bash
+# Detect the Arduino over USB
+./connect-server.sh run 'lsusb'
+
+# Check the serial device
+./connect-server.sh run 'ls -l /dev/ttyACM* /dev/ttyUSB*'
+
+# Detect board via Arduino CLI
+./connect-server.sh run 'arduino-cli board list'
+
+# Compile and upload a sketch
+./connect-server.sh run 'arduino-cli compile --fqbn arduino:avr:uno ~/arduino_projects/arduino-lab/blink_5x'
+./connect-server.sh run 'arduino-cli upload -p /dev/ttyACM0 --fqbn arduino:avr:uno ~/arduino_projects/arduino-lab/blink_5x'
+```
 
 ## License
 
